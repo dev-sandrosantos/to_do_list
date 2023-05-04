@@ -28,3 +28,6 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE.md par
 ## Autor
 Nome do autor 
 - [Alexsandro Santos](https://www.linkedin.com/in/aljsantos/)
+
+## Obs:
+Projeto ainda em desenvolvimento.
