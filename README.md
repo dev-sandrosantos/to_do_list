@@ -20,7 +20,7 @@ Em seguida, abra o projeto no seu editor de código preferido e execute-o em um 
 ##Como contribuir
 Se você quiser contribuir para este projeto, sinta-se à vontade para abrir uma issue ou enviar um pull request. Toda ajuda é bem-vinda!
 
-##Licença
+##Licença</br>
 Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE.md para detalhes.
 
 ##Autor
