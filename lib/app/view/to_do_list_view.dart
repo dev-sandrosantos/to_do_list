@@ -20,55 +20,139 @@ class _ToDoListViewState extends State<ToDoListView> {
       appBar: AppBar(
         title: const Text('Lista de Tarefas'),
       ),
-      body: ListView.builder(
+      body: ListView.separated(
+        separatorBuilder: (context, index) => const SizedBox(height: 4),
         itemCount: widget.controller.toDoListModels.length,
-        itemBuilder: (context, index) {
-          final todo = widget.controller.toDoListModels[index];
-          return ListTile(
-            title: Text(todo.title.toUpperCase(),
-                style: TextStyle(
-                    decoration: !todo.done
-                        ? TextDecoration.none
-                        : TextDecoration.lineThrough)),
-            trailing: Checkbox(
-              value: todo.done,
-              onChanged: (value) {
-                setState(() {
-                  widget.controller.toggleTodo(
-                    id: todo.id,
-                  );
-                });
-              },
-            ),
-            onLongPress: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Deseja remover esta tarefa?'),
-                    actions: [
-                      TextButton(
-                        child: const Text('Cancelar'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      TextButton(
-                        child: const Text('Remover'),
-                        onPressed: () {
-                          setState(() {
-                            widget.controller.removeTodo(
-                              id: todo.id,
+        itemBuilder: (BuildContext context, int index) {
+          final todoNotDone = widget.controller.toDoListModels
+              .where((element) => !element.done)
+              .toList();
+          final todoDone = widget.controller.toDoListModels
+              .where((element) => element.done)
+              .toList();
+          final allTodos = [...todoNotDone, ...todoDone];
+          final todo = allTodos[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(stops: [
+                0.01,
+                0.04
+              ], colors: [
+                Colors.green,
+                Colors.white,
+              ])),
+              child: ListTile(
+                title: FittedBox(
+                  alignment: Alignment.centerLeft,
+                  fit: BoxFit.scaleDown,
+                  child: Text(todo.title.toUpperCase(),
+                      style: TextStyle(
+                          decoration: !todo.done
+                              ? TextDecoration.none
+                              : TextDecoration.lineThrough)),
+                ),
+                trailing: SizedBox(
+                  width: 100,
+                  child: Row(
+                    children: [
+                      Checkbox(
+                          value: todo.done,
+                          onChanged: (value) {
+                            setState(() =>
+                                widget.controller.toggleTodo(id: todo.id));
+                          }),
+                      IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Editar Tarefa'),
+                                  content: Form(
+                                    key: _formKey,
+                                    child: TextFormField(
+                                      maxLength: 35,
+                                      maxLines: 1,
+                                      controller: _textController,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'Por favor, preencha o novo título da tarefa';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: const InputDecoration(
+                                        hintText:
+                                            'Digite o novo título da tarefa',
+                                      ),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('Cancelar'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('Alterar'),
+                                      onPressed: () {
+                                        if (_formKey.currentState!.validate()) {
+                                          setState(() {
+                                            widget.controller.editTodo(
+                                              id: todo.id,
+                                              newTitle: _textController.text,
+                                            );
+                                            _textController.clear();
+                                            Navigator.pop(context);
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
                             );
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ))
                     ],
+                  ),
+                ),
+                onLongPress: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Deseja remover esta tarefa?'),
+                        actions: [
+                          TextButton(
+                            child: const Text('Cancelar'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                          TextButton(
+                            child: const Text('Remover'),
+                            onPressed: () {
+                              setState(() {
+                                widget.controller.removeTodo(
+                                  id: todo.id,
+                                );
+                              });
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
-              );
-            },
+              ),
+            ),
           );
         },
       ),
@@ -82,6 +166,8 @@ class _ToDoListViewState extends State<ToDoListView> {
                 content: Form(
                   key: _formKey,
                   child: TextFormField(
+                    maxLength: 35,
+                    maxLines: 1,
                     controller: _textController,
                     validator: (value) {
                       if (value!.isEmpty) {

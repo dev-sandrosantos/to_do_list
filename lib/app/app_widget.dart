@@ -13,8 +13,8 @@ class AppWidget extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
           useMaterial3: true,
-          colorScheme:
-              ColorScheme.fromSeed(seedColor: const Color(0xFF6C4F64))),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color.fromARGB(255, 166, 3, 3))),
       home: ToDoListView(controller: todoController),
     );
   }
