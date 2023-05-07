@@ -5,9 +5,13 @@ import '../model/to_do_list_model.dart';
 class TodoController extends ChangeNotifier {
   List<ToDoListModel> toDoListModels = [];
 
-  void addTodo({String? title}) {
+  void addTodo({String? title, String? priority}) {
     toDoListModels.add(
-      ToDoListModel(id: toDoListModels.length + 1, title: title!, done: false),
+      ToDoListModel(
+          id: toDoListModels.length + 1,
+          title: title!,
+          done: false,
+          priority: priority!),
     );
     notifyListeners();
   }

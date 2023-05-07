@@ -11,7 +11,10 @@ class ToDoListView extends StatefulWidget {
   State<ToDoListView> createState() => _ToDoListViewState();
 }
 
+List<String> listDropdown = <String>['BAIXA', 'ALTA'];
+
 class _ToDoListViewState extends State<ToDoListView> {
+  String dropdownValue = listDropdown.first;
   final _formKey = GlobalKey<FormState>();
   final _textController = TextEditingController();
   @override
@@ -35,12 +38,12 @@ class _ToDoListViewState extends State<ToDoListView> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(stops: [
-                0.01,
-                0.04
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(stops: const [
+                0.0006,
+                0.032
               ], colors: [
-                Colors.green,
+                todo.priority == 'BAIXA' ? Colors.green : Colors.red,
                 Colors.white,
               ])),
               child: ListTile(
@@ -181,6 +184,23 @@ class _ToDoListViewState extends State<ToDoListView> {
                   ),
                 ),
                 actions: [
+                  StatefulBuilder(builder: (context, setState) {
+                    return DropdownButton<String>(
+                      value: dropdownValue.toUpperCase(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          dropdownValue = value!;
+                        });
+                      },
+                      items: listDropdown
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    );
+                  }),
                   TextButton(
                     child: const Text('Cancelar'),
                     onPressed: () {
@@ -194,6 +214,7 @@ class _ToDoListViewState extends State<ToDoListView> {
                         setState(() {
                           widget.controller.addTodo(
                             title: _textController.text,
+                            priority: dropdownValue,
                           );
                           _textController.clear();
                           Navigator.pop(context);
