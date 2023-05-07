@@ -14,9 +14,21 @@ class ToDoListView extends StatefulWidget {
 List<String> listDropdown = <String>['BAIXA', 'ALTA'];
 
 class _ToDoListViewState extends State<ToDoListView> {
+  @override
+  initState() {
+    super.initState();
+    _textController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
   String dropdownValue = listDropdown.first;
   final _formKey = GlobalKey<FormState>();
-  final _textController = TextEditingController();
+  late TextEditingController _textController;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,6 +80,11 @@ class _ToDoListViewState extends State<ToDoListView> {
                           }),
                       IconButton(
                           onPressed: () {
+                            setState(() {
+                              _textController =
+                                  TextEditingController(text: todo.title);
+                              dropdownValue = todo.priority;
+                            });
                             showDialog(
                               context: context,
                               builder: (context) {
@@ -92,6 +109,25 @@ class _ToDoListViewState extends State<ToDoListView> {
                                     ),
                                   ),
                                   actions: [
+                                    StatefulBuilder(
+                                        builder: (context, setState) {
+                                      return DropdownButton<String>(
+                                        value: dropdownValue.toUpperCase(),
+                                        onChanged: (String? value) {
+                                          setState(() {
+                                            dropdownValue = value!;
+                                          });
+                                        },
+                                        items: listDropdown
+                                            .map<DropdownMenuItem<String>>(
+                                                (String value) {
+                                          return DropdownMenuItem(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                      );
+                                    }),
                                     TextButton(
                                       child: const Text('Cancelar'),
                                       onPressed: () {
@@ -104,9 +140,9 @@ class _ToDoListViewState extends State<ToDoListView> {
                                         if (_formKey.currentState!.validate()) {
                                           setState(() {
                                             widget.controller.editTodo(
-                                              id: todo.id,
-                                              newTitle: _textController.text,
-                                            );
+                                                id: todo.id,
+                                                newTitle: _textController.text,
+                                                newPriority: dropdownValue);
                                             _textController.clear();
                                             Navigator.pop(context);
                                           });

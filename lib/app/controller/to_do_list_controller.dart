@@ -31,10 +31,11 @@ class TodoController extends ChangeNotifier {
     }
   }
 
-  void editTodo({int? id, String? newTitle}) {
+  void editTodo({int? id, String? newTitle, String? newPriority}) {
     for (var todo in toDoListModels) {
       if (todo.id == id) {
         todo.title = newTitle!;
+        todo.priority = newPriority!;
         notifyListeners();
         break;
       }
